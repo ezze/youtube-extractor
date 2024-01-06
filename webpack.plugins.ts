@@ -10,5 +10,7 @@ export const plugins = [
   new ForkTsCheckerWebpackPlugin({
     logger: 'webpack-infrastructure'
   }),
-  new ESLintWebpackPlugin()
+  new ESLintWebpackPlugin({
+    extensions: ['ts', 'tsx']
+  })
 ];
