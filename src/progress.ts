@@ -1,7 +1,8 @@
-import { ConversionProgress, DownloadProgress, MediaProgress } from './types';
-import { initialConversionProgress, integerRegExp, numberRegExp, timeRegExp } from './const';
 import process from 'process';
 import readline from 'readline';
+
+import { initialConversionProgress, integerRegExp, numberRegExp, timeRegExp } from './const';
+import { ConversionProgress, DownloadProgress, MediaProgress } from './types';
 
 export function parseFfmpegProgress(lines: Array<string>): ConversionProgress {
   const progress: ConversionProgress = { ...initialConversionProgress };
@@ -33,7 +34,7 @@ export function parseFfmpegProgress(lines: Array<string>): ConversionProgress {
 }
 
 function getDownloadProgressPercentage(progress: DownloadProgress): string {
-  return `${(progress.downloaded / progress.total * 100).toFixed(2)} %`;
+  return `${((progress.downloaded / progress.total) * 100).toFixed(2)} %`;
 }
 
 export function showMediaProgress(progress: MediaProgress): void {
