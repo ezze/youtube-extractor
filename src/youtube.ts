@@ -88,8 +88,8 @@ async function writeYoutubeCompoundMediaFile(
         // Standard: stdin, stdout, stderr
         'inherit', 'inherit', 'inherit',
         // Custom: pipe:3, pipe:4, pipe:5
-        'pipe', 'pipe', 'pipe',
-      ],
+        'pipe', 'pipe', 'pipe'
+      ]
     });
 
     const progressOutputStream = ffmpegProcess.stdio[3];

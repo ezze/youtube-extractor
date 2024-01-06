@@ -14,7 +14,7 @@ export enum YoutubeMediaType {
 export type YoutubeMediaStreamData = {
   stream: Readable;
   format: VideoFormat;
-}
+};
 
 export type YoutubeBasicMedia = {
   type: YoutubeMediaType.Video | YoutubeMediaType.Audio | YoutubeMediaType.Mixed;
@@ -47,4 +47,4 @@ export type MediaProgress = {
   video: DownloadProgress;
   audio: DownloadProgress;
   conversion: ConversionProgress;
-}
+};
