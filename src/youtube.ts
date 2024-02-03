@@ -2,14 +2,18 @@ import { spawn } from 'child_process';
 import path from 'path';
 import { Writable } from 'stream';
 
-import ffmpegPath from 'ffmpeg-static';
+import ffmpegPathStatic from 'ffmpeg-static';
 import fs from 'fs-extra';
-import { downloadFromInfo, getInfo } from 'ytdl-core';
+import { downloadFromInfo, getInfo, getVideoID } from 'ytdl-core';
 
 import { initialMediaProgress } from './const';
 import { YoutubeExtractorError } from './error';
 import { hideMediaProgress, parseFfmpegProgress, showMediaProgress } from './progress';
-import { MediaProgress, VideoInfo, VideoFormat, YoutubeMediaType, YoutubeMedia, YoutubeCompoundMedia } from './types';
+import { MediaProgress, VideoFormat, VideoInfo, YoutubeCompoundMedia, YoutubeMedia, YoutubeMediaType } from './types';
+
+const ffmpegPath = ffmpegPathStatic
+  .replace(`.webpack${path.sep}main`, `node_modules${path.sep}ffmpeg-static`)
+  .replace('app.asar', 'app.asar.unpacked');
 
 export function getYoutubeMediaInfo(url: string): Promise<VideoInfo> {
   return getInfo(url);
@@ -147,17 +151,24 @@ function getOutputFileName(info: VideoInfo, format: VideoFormat): string {
   return `${ownerChannelName} — ${title}${extension}`.replace(/\.{2,}/g, '.');
 }
 
-async function processMedia(url: string): Promise<void> {
-  const outputDirectoryPath = path.resolve(__dirname, '.');
+export async function processMedia(source: string): Promise<void> {
+  let id: string;
+  try {
+    id = getVideoID(source);
+  } catch (e) {
+    throw new Error(`"${source}" is not a valid video ID or URL`);
+  }
+
+  const outputDirectoryPath = process.cwd();
   await fs.ensureDir(outputDirectoryPath);
 
-  const info = await getYoutubeMediaInfo(url);
-  const source = await openYoutubeMedia(info);
+  const info = await getYoutubeMediaInfo(id);
+  const media = await openYoutubeMedia(info);
 
-  if (source.type === YoutubeMediaType.Compound) {
+  if (media.type === YoutubeMediaType.Compound) {
     let interval: NodeJS.Timeout | undefined;
     try {
-      const { video, audio } = source;
+      const { video, audio } = media;
 
       const outputFileName = getOutputFileName(info, video.format);
       const outputFilePath = path.resolve(outputDirectoryPath, outputFileName);
@@ -180,7 +191,10 @@ async function processMedia(url: string): Promise<void> {
         showMediaProgress(progress);
       }, 100);
 
-      await writeYoutubeCompoundMediaFile(source, outputFilePath, progress);
+      await writeYoutubeCompoundMediaFile(media, outputFilePath, progress);
+    } catch (e) {
+      console.error(e);
+      throw e;
     } finally {
       if (interval) {
         clearInterval(interval);
@@ -188,7 +202,7 @@ async function processMedia(url: string): Promise<void> {
       hideMediaProgress();
     }
   } else {
-    const { stream, format } = source;
+    const { stream, format } = media;
     const outputFileName = getOutputFileName(info, format);
     const outputFilePath = path.resolve(outputDirectoryPath, outputFileName);
     console.log(outputFilePath);
@@ -196,19 +210,19 @@ async function processMedia(url: string): Promise<void> {
   }
 }
 
-(async () => {
-  process.on('SIGINT', () => {
-    hideMediaProgress();
-    console.log('Download process has been interrupted');
-    process.exit(1);
-  });
-
-  try {
-    const videoUrl = 'https://www.youtube.com/watch?v=VuKxidVUWFg';
-    await processMedia(videoUrl);
-    console.log('Video is saved');
-  } catch (e) {
-    console.error('Unable to download video');
-    console.error(e);
-  }
-})();
+// (async () => {
+//   process.on('SIGINT', () => {
+//     hideMediaProgress();
+//     console.log('Download process has been interrupted');
+//     process.exit(1);
+//   });
+//
+//   try {
+//     const videoUrl = 'https://www.youtube.com/watch?v=Ox-wN9sWGCo';
+//     await processMedia(videoUrl);
+//     console.log('Video is saved');
+//   } catch (e) {
+//     console.error('Unable to download video');
+//     console.error(e);
+//   }
+// })();

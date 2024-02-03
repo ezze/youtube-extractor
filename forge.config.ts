@@ -13,7 +13,10 @@ import type { ForgeConfig } from '@electron-forge/shared-types';
 
 const config: ForgeConfig = {
   packagerConfig: {
-    asar: true
+    asar: {
+      unpackDir: 'node_modules/ffmpeg-static'
+    },
+    ignore: []
   },
   rebuildConfig: {},
   makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
@@ -35,7 +38,12 @@ const config: ForgeConfig = {
         ]
       }
     })
-  ]
+  ],
+  hooks: {
+    postPackage: async (forgeConfig, options) => {
+      console.info('Packages built at:', options.outputPaths);
+    }
+  }
 };
 
 export default config;
