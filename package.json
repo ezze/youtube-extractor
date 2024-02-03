@@ -21,6 +21,7 @@
     "commander": "^11.1.0",
     "electron-squirrel-startup": "^1.0.0",
     "ffmpeg-static": "^5.2.0",
+    "filenamify": "^6.0.0",
     "fs-extra": "^11.2.0",
     "ytdl-core": "^4.11.5"
   },

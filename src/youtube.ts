@@ -3,6 +3,7 @@ import path from 'path';
 import { Writable } from 'stream';
 
 import ffmpegPathStatic from 'ffmpeg-static';
+import filenamify from 'filenamify';
 import fs from 'fs-extra';
 import { downloadFromInfo, getInfo, getVideoID } from 'ytdl-core';
 
@@ -168,9 +169,12 @@ export async function processMedia(source: string, outputDirectoryPath: string):
     let interval: NodeJS.Timeout | undefined;
     try {
       const { video, audio } = media;
-
       const outputFileName = getOutputFileName(info, video.format);
-      const outputFilePath = path.resolve(outputDirectoryPath, outputFileName);
+      const outputFilePath = path.resolve(
+        outputDirectoryPath,
+        filenamify(outputFileName, { replacement: '_', maxLength: 200 })
+      );
+
       if (await fs.pathExists(outputFilePath)) {
         await fs.remove(outputFilePath);
       }
