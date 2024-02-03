@@ -151,7 +151,7 @@ function getOutputFileName(info: VideoInfo, format: VideoFormat): string {
   return `${ownerChannelName} — ${title}${extension}`.replace(/\.{2,}/g, '.');
 }
 
-export async function processMedia(source: string): Promise<void> {
+export async function processMedia(source: string, outputDirectoryPath: string): Promise<void> {
   let id: string;
   try {
     id = getVideoID(source);
@@ -159,7 +159,6 @@ export async function processMedia(source: string): Promise<void> {
     throw new Error(`"${source}" is not a valid video ID or URL`);
   }
 
-  const outputDirectoryPath = process.cwd();
   await fs.ensureDir(outputDirectoryPath);
 
   const info = await getYoutubeMediaInfo(id);
