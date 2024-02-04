@@ -149,7 +149,10 @@ function getOutputFileName(info: VideoInfo, format: VideoFormat): string {
   const { ownerChannelName, title } = videoDetails;
   const { container } = format;
   const extension = `.${container}`;
-  return `${ownerChannelName} — ${title}${extension}`.replace(/\.{2,}/g, '.');
+  return filenamify(`${ownerChannelName} — ${title}${extension}`.replace(/\.{2,}/g, '.').replace(/["«»]/, ''), {
+    replacement: '_',
+    maxLength: 200
+  });
 }
 
 export async function processMedia(source: string, outputDirectoryPath: string): Promise<void> {
@@ -195,14 +198,18 @@ export async function processMedia(source: string, outputDirectoryPath: string):
       }, 100);
 
       await writeYoutubeCompoundMediaFile(media, outputFilePath, progress);
-    } catch (e) {
-      console.error(e);
-      throw e;
-    } finally {
+      console.log(`File "${outputFileName}" is written!`);
       if (interval) {
         clearInterval(interval);
       }
       hideMediaProgress();
+    } catch (e) {
+      if (interval) {
+        clearInterval(interval);
+      }
+      hideMediaProgress();
+      console.error(e);
+      throw e;
     }
   } else {
     const { stream, format } = media;
@@ -212,20 +219,3 @@ export async function processMedia(source: string, outputDirectoryPath: string):
     // TODO: implement
   }
 }
-
-// (async () => {
-//   process.on('SIGINT', () => {
-//     hideMediaProgress();
-//     console.log('Download process has been interrupted');
-//     process.exit(1);
-//   });
-//
-//   try {
-//     const videoUrl = 'https://www.youtube.com/watch?v=Ox-wN9sWGCo';
-//     await processMedia(videoUrl);
-//     console.log('Video is saved');
-//   } catch (e) {
-//     console.error('Unable to download video');
-//     console.error(e);
-//   }
-// })();
