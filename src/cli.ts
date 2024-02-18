@@ -22,6 +22,10 @@ async function readSourceFile(sourceFilePath: string): Promise<Array<string>> {
 
   const videoIds: Array<string> = [];
   for await (const line of rl) {
+    const source = line.trim();
+    if (source.startsWith('#') || source.startsWith('//')) {
+      continue;
+    }
     try {
       videoIds.push(getVideoID(line));
     } catch (e) {
@@ -84,7 +88,8 @@ function onReady(): void {
         }
       }
       app.quit();
-    });
+    })
+    .help();
 
   program.parse();
 }
