@@ -10,6 +10,7 @@ import { processMedia } from './youtube';
 
 type ProgramOptions = {
   output?: string;
+  audioOnly?: boolean;
 };
 
 async function readSourceFile(sourceFilePath: string): Promise<Array<string>> {
@@ -37,6 +38,7 @@ function onReady(): void {
   program
     .argument('<videos...>')
     .option('-o, --output <output>', 'output directory path')
+    .option('-a, --audio-only', 'extract audio only')
     .action(async (items: Array<string>, options: ProgramOptions) => {
       console.log('Analyzing input...');
       const videoIds: Array<string> = [];
@@ -67,15 +69,15 @@ function onReady(): void {
         console.log(`- ${videoId}`);
       });
 
-      const { output = process.cwd() } = options;
-      const outputPath = path.isAbsolute(output) ? output : path.resolve(process.cwd(), output);
-      console.log(`The following output directory is detected: ${outputPath}`);
+      const { output = process.cwd(), audioOnly = false } = options;
+      const outputDirectoryPath = path.isAbsolute(output) ? output : path.resolve(process.cwd(), output);
+      console.log(`The following output directory is detected: ${outputDirectoryPath}`);
 
       for (let i = 0; i < videoIds.length; i += 1) {
         const youtubeId = videoIds[i];
         try {
           console.log(`Processing "${youtubeId}"...`);
-          await processMedia(youtubeId, outputPath);
+          await processMedia(youtubeId, { outputDirectoryPath: outputDirectoryPath, audioOnly });
         } catch (e) {
           console.error(e);
         }

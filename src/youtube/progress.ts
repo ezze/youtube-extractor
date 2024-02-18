@@ -1,7 +1,8 @@
 import process from 'process';
 import readline from 'readline';
 
-import { initialConversionProgress, integerRegExp, numberRegExp, timeRegExp } from './const';
+import { initialConversionProgress, integerRegExp, numberRegExp, timeRegExp } from '../const';
+
 import { ConversionProgress, DownloadProgress, MediaProgress } from './types';
 
 export function parseFfmpegProgress(lines: Array<string>): ConversionProgress {
@@ -43,6 +44,13 @@ export function showMediaProgress(progress: MediaProgress): void {
   const { time, frame, fps, converted } = progress.conversion;
   process.stdout.write(`Result conversion: ${time} (frame ${frame} / fps ${fps.toFixed(1)} / bytes ${converted})\n`);
   readline.moveCursor(process.stdout, 0, -3);
+}
+
+export function queueMediaProgressUpdate(progress: MediaProgress): NodeJS.Timeout {
+  showMediaProgress(progress);
+  return setInterval(() => {
+    showMediaProgress(progress);
+  }, 100);
 }
 
 export function hideMediaProgress(): void {

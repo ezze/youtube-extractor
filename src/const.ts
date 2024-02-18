@@ -1,4 +1,4 @@
-import { ConversionProgress, DownloadProgress, MediaProgress } from './types';
+import { ConversionProgress, DownloadProgress, MediaProgress } from './youtube/types';
 
 export const initialDownloadProgress: DownloadProgress = {
   downloaded: 0,
