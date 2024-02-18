@@ -9,8 +9,8 @@ import { YoutubeExtractorError } from '../error';
 import { writeYoutubeAudioFile } from './audio';
 import { writeYoutubeCompoundMediaFile } from './compound';
 import { hideMediaProgress, queueMediaProgressUpdate, showMediaProgress } from './progress';
-import { MediaProgress, VideoInfo, YoutubeMedia, YoutubeMediaType } from './types';
-import { getOutputFileName } from './utils';
+import { MediaProgress, OutputAudioType, VideoInfo, YoutubeMedia, YoutubeMediaType } from './types';
+import { getOutputAudioFileName, getOutputVideoFileName } from './utils';
 
 export function getYoutubeMediaInfo(url: string): Promise<VideoInfo> {
   return getInfo(url);
@@ -68,11 +68,11 @@ export async function openYoutubeMedia(info: VideoInfo, options?: OpenYoutubeMed
 
 export type ProcessMediaOptions = {
   outputDirectoryPath: string;
-  audioOnly?: boolean;
+  audioType?: OutputAudioType;
 };
 
 export async function processMedia(source: string, options: ProcessMediaOptions): Promise<void> {
-  const { outputDirectoryPath, audioOnly } = options;
+  const { outputDirectoryPath, audioType } = options;
 
   let id: string;
   try {
@@ -84,7 +84,7 @@ export async function processMedia(source: string, options: ProcessMediaOptions)
   const info = await getYoutubeMediaInfo(id);
 
   let type: OpenYoutubeMediaType | undefined;
-  if (audioOnly) {
+  if (audioType) {
     type = YoutubeMediaType.Audio;
   }
   const media = await openYoutubeMedia(info, { type });
@@ -98,7 +98,7 @@ export async function processMedia(source: string, options: ProcessMediaOptions)
     if (media.type === YoutubeMediaType.Audio) {
       const { stream, format } = media;
 
-      const outputFileName = getOutputFileName(info, format);
+      const outputFileName = getOutputAudioFileName(info, format, audioType);
       const outputFilePath = path.resolve(outputDirectoryPath, outputFileName);
       if (await fs.pathExists(outputFilePath)) {
         await fs.remove(outputFilePath);
@@ -109,12 +109,12 @@ export async function processMedia(source: string, options: ProcessMediaOptions)
       });
 
       interval = queueMediaProgressUpdate(progress);
-      await writeYoutubeAudioFile(media, outputFilePath, progress);
+      await writeYoutubeAudioFile(media, outputFilePath, format.audioBitrate, progress);
       console.log(`File "${outputFileName}" is written!`);
     } else if (media.type === YoutubeMediaType.Compound) {
       const { video, audio } = media;
 
-      const outputFileName = getOutputFileName(info, video.format);
+      const outputFileName = getOutputVideoFileName(info, video.format);
       const outputFilePath = path.resolve(outputDirectoryPath, outputFileName);
       if (await fs.pathExists(outputFilePath)) {
         await fs.remove(outputFilePath);

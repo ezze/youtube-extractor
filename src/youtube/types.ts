@@ -28,6 +28,8 @@ export type YoutubeCompoundMedia = {
 
 export type YoutubeMedia = YoutubeBasicMedia | YoutubeCompoundMedia;
 
+export type OutputAudioType = 'original' | 'mp3';
+
 export type DownloadProgress = {
   downloaded: number;
   total: number;

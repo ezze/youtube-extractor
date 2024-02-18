@@ -2,15 +2,16 @@ import { app } from 'electron';
 import path from 'path';
 import readline from 'readline';
 
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import fs from 'fs-extra';
 import { getVideoID } from 'ytdl-core';
 
 import { processMedia } from './youtube';
+import { OutputAudioType } from './youtube/types';
 
 type ProgramOptions = {
   output?: string;
-  audioOnly?: boolean;
+  audio?: OutputAudioType;
 };
 
 async function readSourceFile(sourceFilePath: string): Promise<Array<string>> {
@@ -37,8 +38,8 @@ function onReady(): void {
 
   program
     .argument('<videos...>')
-    .option('-o, --output <output>', 'output directory path')
-    .option('-a, --audio-only', 'extract audio only')
+    .addOption(new Option('-o, --output <output>', 'output directory path'))
+    .addOption(new Option('-a, --audio <audio>', 'extract audio only').choices(['original', 'mp3']))
     .action(async (items: Array<string>, options: ProgramOptions) => {
       console.log('Analyzing input...');
       const videoIds: Array<string> = [];
@@ -69,7 +70,7 @@ function onReady(): void {
         console.log(`- ${videoId}`);
       });
 
-      const { output = process.cwd(), audioOnly = false } = options;
+      const { output = process.cwd(), audio: audioType } = options;
       const outputDirectoryPath = path.isAbsolute(output) ? output : path.resolve(process.cwd(), output);
       console.log(`The following output directory is detected: ${outputDirectoryPath}`);
 
@@ -77,7 +78,7 @@ function onReady(): void {
         const youtubeId = videoIds[i];
         try {
           console.log(`Processing "${youtubeId}"...`);
-          await processMedia(youtubeId, { outputDirectoryPath: outputDirectoryPath, audioOnly });
+          await processMedia(youtubeId, { outputDirectoryPath: outputDirectoryPath, audioType });
         } catch (e) {
           console.error(e);
         }
