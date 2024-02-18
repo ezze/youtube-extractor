@@ -89,7 +89,7 @@ function onReady(): void {
       }
       app.quit();
     })
-    .help();
+    .helpOption('-h, --help', 'show this help information');
 
   program.parse();
 }
