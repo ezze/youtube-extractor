@@ -2,24 +2,21 @@ import filenamify from 'filenamify';
 
 import { OutputAudioType, VideoFormat, VideoInfo } from './types';
 
-export function getOutputVideoFileName(info: VideoInfo, format: VideoFormat): string {
+function getOutputBaseFileName(info: VideoInfo): string {
   const { videoDetails } = info;
   const { ownerChannelName, title } = videoDetails;
-  const { container } = format;
-  const extension = `.${container}`;
-  return filenamify(`${ownerChannelName} — ${title}${extension}`.replace(/\.{2,}/g, '.').replace(/["«»]/, ''), {
+  return filenamify(`${ownerChannelName} — ${title}`.replace(/\.{2,}/g, '.').replace(/["«»]/g, ''), {
     replacement: '_',
     maxLength: 200
   });
 }
 
-export function getOutputAudioFileName(info: VideoInfo, format: VideoFormat, audioType: OutputAudioType): string {
-  const { videoDetails } = info;
-  const { ownerChannelName, title } = videoDetails;
+export function getOutputVideoFileName(info: VideoInfo, format: VideoFormat): string {
   const { container } = format;
-  const extension = audioType === 'mp3' ? '.mp3' : `.${container}`;
-  return filenamify(`${ownerChannelName} — ${title}${extension}`.replace(/\.{2,}/g, '.').replace(/["«»]/, ''), {
-    replacement: '_',
-    maxLength: 200
-  });
+  return `${getOutputBaseFileName(info)}.${container}`;
+}
+
+export function getOutputAudioFileName(info: VideoInfo, format: VideoFormat, audioType: OutputAudioType): string {
+  const { container } = format;
+  return `${getOutputBaseFileName(info)}.${audioType === 'mp3' ? 'mp3' : `${container}`}`;
 }
