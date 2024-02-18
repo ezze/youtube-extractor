@@ -21,7 +21,7 @@
 - Single video download:
 
    ```
-   ./youtube-extractor https://www.youtube.com/watch?v=ByTuHDdZOX8
+   ./youtube-extractor -- https://www.youtube.com/watch?v=ByTuHDdZOX8
    ```
   
 - Specify output directory:
@@ -33,19 +33,19 @@
 - Bulk video download:
 
    ```
-   ./youtube-extractor https://www.youtube.com/watch?v=cbB3iGRHtqA https://www.youtube.com/watch?v=rbUVR-qLTvk https://www.youtube.com/watch?v=4YxTa1AUqps
+   ./youtube-extractor -- https://www.youtube.com/watch?v=cbB3iGRHtqA https://www.youtube.com/watch?v=rbUVR-qLTvk https://www.youtube.com/watch?v=4YxTa1AUqps
    ```
   
 - Bulk video download specifying Youtube video identifiers only:
 
    ```
-   ./youtube-extractor cbB3iGRHtqA rbUVR-qLTvk 4YxTa1AUqps
+   ./youtube-extractor -- cbB3iGRHtqA rbUVR-qLTvk 4YxTa1AUqps
    ```
   
 - Use source file to download:
 
    ```
-   ./youtube-extractor source
+   ./youtube-extractor -- source
    ``` 
   
    where source file contents are the following:
