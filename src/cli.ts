@@ -2,9 +2,9 @@ import { app } from 'electron';
 import path from 'path';
 import readline from 'readline';
 
+import { getVideoID } from '@distube/ytdl-core';
 import { Command, Option } from 'commander';
 import fs from 'fs-extra';
-import { getVideoID } from 'ytdl-core';
 
 import { processMedia } from './youtube';
 import { OutputAudioType } from './youtube/types';

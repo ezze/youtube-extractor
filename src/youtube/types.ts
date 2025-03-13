@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 
-import { videoFormat as VideoFormat, videoInfo as VideoInfo } from 'ytdl-core';
+import { videoFormat as VideoFormat, videoInfo as VideoInfo } from '@distube/ytdl-core';
 
 export { VideoFormat, VideoInfo };
 

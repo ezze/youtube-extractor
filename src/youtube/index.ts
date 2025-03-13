@@ -1,7 +1,7 @@
 import path from 'path';
 
+import { downloadFromInfo, getInfo, getVideoID } from '@distube/ytdl-core';
 import fs from 'fs-extra';
-import { downloadFromInfo, getInfo, getVideoID } from 'ytdl-core';
 
 import { initialMediaProgress } from '../const';
 import { YoutubeExtractorError } from '../error';
